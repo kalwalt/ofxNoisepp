@@ -23,7 +23,7 @@ void ofxNoisepp::loadPipeline2D(string filename, ofVec4f bounds ){
 		if (reader.getModule() == NULL)
 		{
 			cerr << "File in wrong format or corrupted: " << filename << endl;
-			delete[] data;
+			delete[] m_data;
 			//return 1;
 			//exit;
 		}
@@ -42,10 +42,10 @@ void ofxNoisepp::loadPipeline2D(string filename, ofVec4f bounds ){
 
  void ofxNoisepp::loadPipeline2D( string filename, ofVec4f bounds, int w, int h, bool seamless ){
 
-    _w = w;
-    _h = h;
+    m_w = w;
+    m_h = h;
 
-    FileInStream f(filename.c_str());
+    FileInStream f(ofToDataPath(filename.c_str()));
 	if (!f.isOpen())
 	{
 		cerr << "Can't open file for reading: " << filename << endl;
@@ -55,14 +55,14 @@ void ofxNoisepp::loadPipeline2D(string filename, ofVec4f bounds ){
 	 cout << "fileloaded!"  << endl;
 
      //Real *data = new Real[w*h];
-     data = new Real[w*h];
+     m_data = new Real[w*h];
 
 		// read data
 		Reader reader(f);
 		if (reader.getModule() == NULL)
 		{
 			cerr << "File in wrong format or corrupted: " << filename << endl;
-			delete[] data;
+			delete[] m_data;
 			//return 1;
 			//exit;
 		}
@@ -73,7 +73,7 @@ void ofxNoisepp::loadPipeline2D(string filename, ofVec4f bounds ){
 		m_builder.setSize (w, h);
 		m_builder.setBounds (bounds.x, bounds.y, bounds.z, bounds.w);
 		m_builder.setSeamless(seamless);
-		m_builder.setDestination (data);
+		m_builder.setDestination (m_data);
 		m_builder.build ();
 
 
@@ -81,51 +81,36 @@ void ofxNoisepp::loadPipeline2D(string filename, ofVec4f bounds ){
 
 void ofxNoisepp::bindPipeline2D(PlaneBuilder2D builder){
 
-    builder = m_builder;
+     m_builder = builder;
 
 
 }
 
 void ofxNoisepp::saveImage(string filename){
 
-unsigned char *pixels = (unsigned char *)malloc(_w*_h*3);
 
-	noisepp::utils::Image img;
-	img.create (_w, _h);
+	m_image.saveImage(filename);
 
 
 }
 
- void ofxNoisepp::setup(){
+ void ofxNoisepp::setup(GradientRenderer gradients){
 
-      unsigned char *pixels = (unsigned char *)malloc(_w*_h*3);
+    unsigned char *pixels = (unsigned char *)malloc(m_w*m_h*3);
 
 	noisepp::utils::Image img;
-	img.create (_w, _h);
+	img.create (m_w, m_h);
 
-	noisepp::utils::GradientRenderer gradients;
-	//gradients.addGradient (-1.0, noisepp::utils::ColourValue(0.0f, 0.0f, 0.0f));
-	//gradients.addGradient ( 1.0, noisepp::utils::ColourValue(1.0f, 1.0f, 1.0f));
+	gradients.renderImage (img, m_data);
 
-	gradients.addGradient (-1.0000, noisepp::utils::ColourValue (  0,   0, 128)/255.f); // deeps
-    gradients.addGradient (-0.2500, noisepp::utils::ColourValue (  0,   0, 255)/255.f); // shallow
-    gradients.addGradient ( 0.0000, noisepp::utils::ColourValue (  0, 128, 255)/255.f); // shore
-    gradients.addGradient ( 0.0625, noisepp::utils::ColourValue (240, 240,  64)/255.f); // sand
-    gradients.addGradient ( 0.1250, noisepp::utils::ColourValue ( 32, 160,   0)/255.f); // grass
-    gradients.addGradient ( 0.3750, noisepp::utils::ColourValue (224, 224,   0)/255.f); // dirt
-    gradients.addGradient ( 0.7500, noisepp::utils::ColourValue (128, 128, 128)/255.f); // rock
-    gradients.addGradient ( 1.0000, noisepp::utils::ColourValue (255, 255, 255)/255.f); // snow
+    std::memcpy (pixels, img.getPixelData(), m_w*m_h*3);
 
-	gradients.renderImage (img, data);
-
-    std::memcpy (pixels, img.getPixelData(), _w*_h*3);
-
-	m_image.setFromPixels(pixels,_w,_h,OF_IMAGE_COLOR,true);
+	m_image.setFromPixels(pixels,m_w,m_h,OF_IMAGE_COLOR,true);
 
     m_image.reloadTexture();
 
-    delete[] data;
-	data = 0;
+    delete[] m_data;
+	m_data = 0;
 
 
 
@@ -135,6 +120,20 @@ unsigned char *pixels = (unsigned char *)malloc(_w*_h*3);
 void ofxNoisepp::display(){
 
 
-
     m_image.draw(0,0);
+}
+
+unsigned char 	*	ofxNoisepp::getPixels(){
+
+    unsigned char * getPix = (unsigned char *)malloc(m_w*m_h*3);
+   if( m_image.isAllocated() ){
+
+    getPix = m_image.getPixels();
+
+
+   }
+   return getPix;
+
+
+
 }

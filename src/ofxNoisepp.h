@@ -18,9 +18,13 @@ public:
         void loadPipeline2D( string filename, ofVec4f bounds );
         void loadPipeline2D( string filename, ofVec4f bounds, int w, int h, bool seamless );
         void bindPipeline2D(PlaneBuilder2D builder);
-        void setup();
+        void setup(GradientRenderer gradients);
         void saveImage(string filename);
         void display();
+
+        ///getters
+
+        unsigned char 	*	getPixels();
 
 
 private:
@@ -29,10 +33,10 @@ private:
         ofImage m_image;
         PlaneBuilder2D m_builder;
 
-        Real *data;
+        Real *m_data;
 
-        int _w;
-        int _h;
+        int m_w;
+        int m_h;
 
 
 };
