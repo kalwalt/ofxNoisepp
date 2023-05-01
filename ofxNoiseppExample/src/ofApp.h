@@ -21,6 +21,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
 		ofxNoisepp noisepp;
+		noisepp::utils::GradientRenderer gradients;
 
 		ofVec4f bounds;
 };
