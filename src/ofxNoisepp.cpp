@@ -107,7 +107,7 @@ void ofxNoisepp::saveImage(string filename){
 
 	m_image.setFromPixels(pixels,m_w,m_h,OF_IMAGE_COLOR,true);
 
-    m_image.reloadTexture();
+    m_image.update();
 
     delete[] m_data;
 	m_data = 0;
