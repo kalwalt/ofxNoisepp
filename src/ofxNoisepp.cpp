@@ -128,7 +128,7 @@ unsigned char 	*	ofxNoisepp::getPixels(){
     unsigned char * getPix = (unsigned char *)malloc(m_w*m_h*3);
    if( m_image.isAllocated() ){
 
-    getPix = m_image.getPixels();
+    getPix = m_image.getPixels().getData();
 
 
    }
